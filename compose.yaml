@@ -9,7 +9,39 @@ services:
     networks:
       - roboshop
 
-  
+  redis:
+    image: jaganf8/redis:1.0.0
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - roboshop
+
+  mysql:
+    image: jaganf8/mysql:1.0.0
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=roboshop@1
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - roboshop
+
+  rabbitmq:
+    image: jaganf8/rabbitmq:1.0.0
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - roboshop
+
 
   catalogue:
     image: jaganf8/catalogue:1.0.0
@@ -21,6 +53,69 @@ services:
       - "8080:8080"
     networks:
       - roboshop
+  
+  user:
+    image: jaganf8/user:1.0.0
+    container_name: user
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://<MONGODB-SERVER-IP-ADDRESS>:27017/users
+    networks:
+      - roboshop
+    ports:
+      - "8080:8080"
+  
+
+  cart:
+    image: jaganf8/cart:1.0.0
+    container_name: cart
+    environment:
+      - REDIS_HOST=redis
+      - CATALOGUE_HOST=catalogue
+      - CATALOGUE_PORT=8080
+    networks:
+      - roboshop
+    ports:
+      - "8080:8080"
+
+  shipping:
+    image: jaganf8/shipping:1.0.0
+    container_name: shipping
+    environment:
+      - CART_ENDPOINT=cart:8080
+      - DB_HOST=mysql
+    networks:
+      - roboshop
+    ports:
+      - "8080:8080"
+  
+  payment:
+    image: jaganf8/payment:1.0.0
+    container_name: payment
+    environment:
+      - CART_HOST=cart
+      - CART_PORT=8080
+      - USER_HOST=user
+      - USER_PORT=8080
+      - AMQP_HOST=rabbitmq
+      - AMQP_USER=roboshop
+      - AMQP_PASS=roboshop123
+    networks:
+      - roboshop
+    ports:
+      - "8080:8080"
+
+  # dispatch:
+  #   image: jaganf8/dispatch:1.0.0
+  #   container_name: dispatch
+  #   environment:
+  #     - AMQP_HOST=rabbitmq
+  #     - AMQP_USER=roboshop
+  #     - AMQP_PASS=roboshop123
+  #   networks:
+  #     - roboshop
+  #   ports:
+  #     - "8080:8080"
   
 volumes:
   mongo_data:
