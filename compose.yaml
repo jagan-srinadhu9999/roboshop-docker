@@ -8,6 +8,20 @@ services:
       - mongo_data:/data/db
     networks:
       - roboshop
+
+  
+
+  catalogue:
+    image: jaganf8/catalogue:1.0.0
+    container_name: catalogue
+    environment:
+      - MONGO=true
+      - MONGO_URL=mongodb://mongodb:27017/catalogue
+    ports:
+      - "8080:8080"
+    networks:
+      - roboshop
+  
 volumes:
   mongo_data:
   redis_data:
