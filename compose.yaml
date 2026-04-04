@@ -13,3 +13,7 @@ volumes:
   redis_data:
   mysql_data:
   rabbitmq_data:
+
+networks:
+  roboshop:
+    driver: bridge
