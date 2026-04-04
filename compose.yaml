@@ -105,17 +105,26 @@ services:
     ports:
       - "8080:8080"
 
-  # dispatch:
-  #   image: jaganf8/dispatch:1.0.0
-  #   container_name: dispatch
-  #   environment:
-  #     - AMQP_HOST=rabbitmq
-  #     - AMQP_USER=roboshop
-  #     - AMQP_PASS=roboshop123
-  #   networks:
-  #     - roboshop
-  #   ports:
-  #     - "8080:8080"
+  dispatch:
+    image: jaganf8/dispatch:1.0.0
+    container_name: dispatch
+    environment:
+      - AMQP_HOST=rabbitmq
+      - AMQP_USER=roboshop
+      - AMQP_PASS=roboshop123
+    networks:
+      - roboshop
+    ports:
+      - "8080:8080"
+  
+  frontend:
+    image: jaganf8/frontend:1.0.0
+    container_name: frontend
+    networks:
+      - roboshop
+    ports:
+      - "80:80"
+
   
 volumes:
   mongo_data:
