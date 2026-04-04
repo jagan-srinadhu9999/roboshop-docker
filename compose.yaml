@@ -62,8 +62,8 @@ services:
       - MONGO_URL=mongodb://<MONGODB-SERVER-IP-ADDRESS>:27017/users
     networks:
       - roboshop
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
   
 
   cart:
@@ -75,8 +75,8 @@ services:
       - CATALOGUE_PORT=8080
     networks:
       - roboshop
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
 
   shipping:
     image: jaganf8/shipping:1.0.0
@@ -86,8 +86,8 @@ services:
       - DB_HOST=mysql
     networks:
       - roboshop
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
   
   payment:
     image: jaganf8/payment:1.0.0
@@ -102,8 +102,8 @@ services:
       - AMQP_PASS=roboshop123
     networks:
       - roboshop
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
 
   dispatch:
     image: jaganf8/dispatch:1.0.0
@@ -114,8 +114,8 @@ services:
       - AMQP_PASS=roboshop123
     networks:
       - roboshop
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
   
   frontend:
     image: jaganf8/frontend:1.0.0
