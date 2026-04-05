@@ -136,7 +136,7 @@ services:
     #   - "8080:8080"
   
   frontend:
-    image: jaganf8/frontend:1.0.0
+    image: jaganf8/frontend:1.0.1
     container_name: frontend
     networks:
       - roboshop
