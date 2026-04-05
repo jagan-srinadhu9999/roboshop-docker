@@ -17,7 +17,8 @@ FROM node:22-alpine3.22 as builder
 WORKDIR /app
 COPY package*.json ./
 COPY . .
-RUN npm ci
+#RUN npm ci
+RUN npm install
 
 FROM node:22-alpine3.22
 WORKDIR /app
