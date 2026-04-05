@@ -44,7 +44,7 @@ services:
 
 
   catalogue:
-    image: jaganf8/catalogue:1.0.0
+    image: jaganf8/catalogue:2.0.0
     container_name: catalogue
     environment:
       - MONGO=true
@@ -53,6 +53,8 @@ services:
       - "8080:8080"
     networks:
       - roboshop
+    depends_on:
+      - mongodb
   
   user:
     image: jaganf8/user:1.0.0
@@ -62,6 +64,10 @@ services:
       - MONGO_URL=mongodb://<MONGODB-SERVER-IP-ADDRESS>:27017/users
     networks:
       - roboshop
+
+    depends_on:
+      - redis
+      - mongodb
     # ports:
     #   - "8080:8080"
   
@@ -75,6 +81,9 @@ services:
       - CATALOGUE_PORT=8080
     networks:
       - roboshop
+    depends_on:
+      - redis
+      - catalogue
     # ports:
     #   - "8080:8080"
 
@@ -86,6 +95,9 @@ services:
       - DB_HOST=mysql
     networks:
       - roboshop
+    depends_on:
+      - cart 
+      - mysql
     # ports:
     #   - "8080:8080"
   
@@ -102,6 +114,10 @@ services:
       - AMQP_PASS=roboshop123
     networks:
       - roboshop
+    depends_on:
+      - cart
+      - user
+      - rabbitmq
     # ports:
     #   - "8080:8080"
 
@@ -114,6 +130,8 @@ services:
       - AMQP_PASS=roboshop123
     networks:
       - roboshop
+    depends_on:
+      - rabbitmq
     # ports:
     #   - "8080:8080"
   
@@ -124,6 +142,13 @@ services:
       - roboshop
     ports:
       - "80:80"
+    depends_on:
+      - catalogue
+      - user
+      - cart
+      - shipping
+      - payment
+      - dispatch
 
   
 volumes:
