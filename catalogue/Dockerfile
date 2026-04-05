@@ -22,7 +22,9 @@ RUN npm install
 
 FROM node:22-alpine3.22
 WORKDIR /app
-COPY --from=builder /app /app
+#COPY --from=builder /app /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/server.js ./server.js
 RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 RUN chown -R roboshop:roboshop /app
 USER roboshop 
