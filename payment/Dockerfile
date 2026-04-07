@@ -2,25 +2,29 @@
 FROM python:3.11-alpine AS builder
 WORKDIR /app
 # Install build dependencies
-RUN apk add --no-cache \
-    gcc \
-    musl-dev \
-    libffi-dev \
-    postgresql-dev
+# RUN apk add --no-cache \
+#     gcc \
+#     musl-dev \
+#     libffi-dev \
+#     postgresql-dev
+RUN apk add --no-cache build-base linux-headers pcre-dev
 COPY requirements.txt .
 #install dependices into custom location to avoid installing them in the final image
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip3.11 install --no-cache-dir --prefix=/install -r requirements.txt
 
 FROM python:3.11-alpine
+EXPOSE 8080
 WORKDIR /app
 # Install only runtime libraries (lighter)
-RUN apk add --no-cache \
-    libpq \
-    libffi
-COPY --from=builder /install /usr/local
-COPY . .
+# RUN apk add --no-cache \
+#     libpq \
+#     libffi
+RUN apk add --no-cache pcre
+
 RUN addgroup -S roboshop && adduser -S roboshop -G roboshop \
     && chown -R roboshop:roboshop /app
+COPY --from=builder /install /usr/local
+COPY --chown=roboshop:roboshop payment.ini *.py requirements.txt .
 USER roboshop
 CMD ["uwsgi", "--ini", "payment.ini"]
 
