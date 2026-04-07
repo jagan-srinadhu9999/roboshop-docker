@@ -1,28 +1,27 @@
+FROM nginx:1.24.0-alpine3.17-slim
 
-# ---------- Builder ----------
-FROM node:20-alpine AS builder
+RUN rm /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /app
+RUN mkdir -p /var/cache/nginx/client_temp && \
+    mkdir -p /var/cache/nginx/proxy_temp && \
+    mkdir -p /var/cache/nginx/fastcgi_temp && \
+    mkdir -p /var/cache/nginx/uwsgi_temp && \
+    mkdir -p /var/cache/nginx/scgi_temp && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /etc/nginx/ && \
+    chmod -R 755 /etc/nginx/ && \
+    chown -R nginx:nginx /var/log/nginx
 
-COPY package*.json ./
-RUN npm install
+RUN mkdir -p /etc/nginx/ssl/ && \
+    chown -R nginx:nginx /etc/nginx/ssl/ && \
+    chmod -R 755 /etc/nginx/ssl/
 
-COPY . .
-RUN npm run build
-
-# ---------- Runtime ----------
-FROM nginx:1.24-alpine
-
-RUN rm -f /etc/nginx/conf.d/default.conf
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-COPY --from=builder /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
+RUN touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid /run/nginx.pid
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY static /usr/share/nginx/html/
+USER nginx
 CMD ["nginx", "-g", "daemon off;"]
-
 
 #FROM nginx:1.24
 # WORKDIR /usr/share/nginx/html
